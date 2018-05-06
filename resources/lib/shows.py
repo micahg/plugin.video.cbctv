@@ -30,6 +30,15 @@ class Shows:
 
     def getHeaders(self):
         auth = loadAuthorization()
+
+        if not 'token' in auth:
+            log('Auth file has not token!', True)
+            raise CBCAuthError('getHeaders', False)
+
+        if not 'devid' in auth:
+            log('Auth file has not device id!', True)
+            raise CBCAuthError('getHeaders', False)
+
         return None if auth == None else {
             'X-Clearleap-DeviceToken': auth['token'],
             'X-Client-Version': '9.9.9',

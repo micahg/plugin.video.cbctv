@@ -22,6 +22,14 @@ from resources.lib.liveprograms import *
 from resources.lib.shows import *
 from resources.lib.cbc import *
 
+
+"""from resources.lib.utils import *
+auth = loadAuthorization()
+del auth['token']
+saveAuthorization(auth)
+sys.exit(0)"""
+
+
 def progress(x):
     print x
 
