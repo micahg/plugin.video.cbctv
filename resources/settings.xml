@@ -2,5 +2,9 @@
 <settings>
    <setting id="username"  type="text" label="30007"/>
    <setting id="password"  type="text" label="30008" option="hidden"/>
+   <setting type="sep"/>
+   <setting id="bitrate_select" type="bool" label="30013"/>
+   <setting id="bitrate_high" type="bool" label="30014" default="true"/>
+   <setting type="sep"/>
    <setting id="logout" option="close" label="30009" type="action" action="RunScript(plugin.video.cbc, logout)"/>
 </settings>

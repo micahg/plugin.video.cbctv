@@ -57,6 +57,9 @@ elif options.video:
         print ('ERROR: login required' if e.payment else 'ERROR: Unauthorized')
         sys.exit(1)
     print res
+    streams = cbc.parsePlaylist(res['url'])
+    for bitrate in reversed(sorted(streams.keys())):
+        print '{}) {}'.format(bitrate, streams[bitrate])
     sys.exit(0)
 elif options.shows:
     res = shows.getShows(None if len(args) == 0 else args[0],

@@ -20,6 +20,7 @@ if sys.argv[1] == 'logout':
 
 addon_handle = int(sys.argv[1])
 
+
 def authorize():
         prog = xbmcgui.DialogProgress()
         prog.create(getString(30001))
@@ -44,9 +45,31 @@ def authorize():
         return True
 
 
+def selectStream(url):
+    """
+    Check to see if the user has stream (auto)selection enabled
+    """
+    if xbmcaddon.Addon().getSetting("bitrate_high") == 'true':
+        streams = CBC().parsePlaylist(url)
+        keys = streams.keys()
+        keys.sort()
+        keys.reverse()
+        return streams[keys[0]]
+
+    if xbmcaddon.Addon().getSetting("bitrate_select") == 'true':
+        streams = CBC().parsePlaylist(url)
+        keys = streams.keys()
+        keys.sort()
+        keys.reverse()
+        index = xbmcgui.Dialog().select(getString(30015), map(str, keys))
+        return streams[keys[index]]
+
+    return url
+
+
 def playSmil(smil, labels, image):
     cbc = CBC()
-    url = cbc.parseSmil(smil)
+    url = selectStream(cbc.parseSmil(smil))
     item = xbmcgui.ListItem(labels['title'], path=url)
     item.setArt({ 'thumb': image, 'poster': image })
     item.setInfo(type="Video", infoLabels=labels)
@@ -80,7 +103,9 @@ def playShow(values):
                 xbmcgui.Dialog().ok(getString(30010), getString(30012))
             return
 
-    item = xbmcgui.ListItem(labels['title'], path=res['url'])
+    stream=selectStream(res['url'])
+
+    item = xbmcgui.ListItem(labels['title'], path=stream)
 
     item.setInfo(type="Video", infoLabels=labels)
     item.setArt({ 'thumb': image, 'poster': image })

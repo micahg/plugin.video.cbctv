@@ -1,5 +1,6 @@
-import requests, uuid, urllib, json
+import requests, uuid, urllib, json, re
 from xml.dom.minidom import *
+from urlparse import urlparse
 import xml.etree.ElementTree as ET
 
 from utils import saveCookies, loadCookies, saveAuthorization, log
@@ -222,3 +223,43 @@ class CBC:
         title = video.attributes['title'].value
         abstract = video.attributes['abstract'].value
         return src
+
+
+    def parsePlaylist(self, url):
+        """
+        Parse the playlist and split it by bitrate.
+        """
+        streams = {}
+
+        r = self.session.get(url)
+        if not r.status_code == 200:
+            log('ERROR: {} returns status of {}'.format(url, r.status_code), True)
+            return None
+
+        m3u8 = r.content
+
+        url = urlparse(url)
+        prefix = url.scheme + "://" + url.netloc + url.path[:url.path.rfind('/')+1]
+        suffix = '?' + url.params + url.query + url.fragment
+        lines = m3u8.split('\n')
+
+        bandwidth = ""
+        for line in lines:
+            if line == "#EXTM3U":
+                continue
+            if line[:17] == '#EXT-X-STREAM-INF':
+                bandwidth = re.search(".*,?BANDWIDTH\=(.*?),.*", line)
+                if bandwidth:
+                    bandwidth = bandwidth.group(1)
+                else:
+                    log("Unable to parse bandwidth")
+            elif line[-5:] == ".m3u8":
+                #stream = '{0}{1}|User-Agent={2}&Authorization={3}'.format(prefix,
+                #            line, urllib.quote(self.USER_AGENT), token)
+                if line[0:4] == 'http':
+                    stream = line
+                else:
+                    stream = '{0}{1}'.format(prefix, line)
+                streams[int(bandwidth)] = stream
+
+        return streams

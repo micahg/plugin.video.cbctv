@@ -63,3 +63,15 @@ msgstr ""
 msgctxt "#30012"
 msgid "Please logout in settings and try again"
 msgstr ""
+
+msgctxt "#30013"
+msgid "Bitrate selection"
+msgstr ""
+
+msgctxt "#30014"
+msgid "Autoselect highest bitrate"
+msgstr ""
+
+msgctxt "#30015"
+msgid "Select Bitrate"
+msgstr ""
