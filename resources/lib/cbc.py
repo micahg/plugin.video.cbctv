@@ -78,11 +78,12 @@ class CBC:
 
     def registerDevice(self, url):
         r = self.session.post(url, data=self.DEVICE_XML_FMT)
+        log('MICAH requesting {}'.format(url), True)
         if not r.status_code == 200:
             log('ERROR: {} returns status of {}'.format(url, r.status_code), True)
             return None
         saveCookies(self.session.cookies)
-
+        log('MICAH result is {}'.format(r.content), True)
         # Parse the authorization response
         dom = parseString(r.content)
         status = dom.getElementsByTagName('status')[0].firstChild.nodeValue
