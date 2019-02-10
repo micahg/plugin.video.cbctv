@@ -5,6 +5,7 @@ from resources.lib.shows import *
 from resources.lib.cbc import *
 from urllib import urlencode
 import xbmc, xbmcplugin, xbmcgui, xbmcaddon, os, urlparse
+import inputstreamhelper
 
 getString = xbmcaddon.Addon().getLocalizedString
 
@@ -45,10 +46,19 @@ def authorize():
 
 
 def play(labels, image, url):
+    # item = xbmcgui.ListItem(labels['title'], path=url)
+    # item.setArt({ 'thumb': image, 'poster': image })
+    # item.setInfo(type="Video", infoLabels=labels)
+    # xbmcplugin.setResolvedUrl(addon_handle, True, item)
+    helper = inputstreamhelper.Helper('hls')
+    if not helper.check_inputstream():
+        log('(play) inputstream failed')
+        return None
     item = xbmcgui.ListItem(labels['title'], path=url)
-    item.setArt({ 'thumb': image, 'poster': image })
-    item.setInfo(type="Video", infoLabels=labels)
+    item.setProperty('inputstreamaddon','inputstream.adaptive')
+    item.setProperty('inputstream.adaptive.manifest_type', 'hls')
     xbmcplugin.setResolvedUrl(addon_handle, True, item)
+    #xbmc.Player().play(url, item)
 
 def playSmil(smil, labels, image):
     cbc = CBC()
@@ -83,7 +93,7 @@ def playShow(values):
                 xbmcgui.Dialog().ok(getString(30010), getString(30012))
             return
 
-    return play(image, labels, res['url'])
+    return play(labels, image, res['url'])
     # item = xbmcgui.ListItem(labels['title'], path=res['url'])
     # item.setInfo(type="Video", infoLabels=labels)
     # item.setArt({ 'thumb': image, 'poster': image })
