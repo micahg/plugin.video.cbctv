@@ -44,13 +44,16 @@ def authorize():
         return True
 
 
-def playSmil(smil, labels, image):
-    cbc = CBC()
-    url = cbc.parseSmil(smil)
+def play(labels, image, url):
     item = xbmcgui.ListItem(labels['title'], path=url)
     item.setArt({ 'thumb': image, 'poster': image })
     item.setInfo(type="Video", infoLabels=labels)
     xbmcplugin.setResolvedUrl(addon_handle, True, item)
+
+def playSmil(smil, labels, image):
+    cbc = CBC()
+    url = cbc.parseSmil(smil)
+    return play(labels, image, url)
 
 
 def playShow(values):
@@ -80,11 +83,11 @@ def playShow(values):
                 xbmcgui.Dialog().ok(getString(30010), getString(30012))
             return
 
-    item = xbmcgui.ListItem(labels['title'], path=res['url'])
-
-    item.setInfo(type="Video", infoLabels=labels)
-    item.setArt({ 'thumb': image, 'poster': image })
-    xbmcplugin.setResolvedUrl(addon_handle, True, item)
+    return play(image, labels, res['url'])
+    # item = xbmcgui.ListItem(labels['title'], path=res['url'])
+    # item.setInfo(type="Video", infoLabels=labels)
+    # item.setArt({ 'thumb': image, 'poster': image })
+    # xbmcplugin.setResolvedUrl(addon_handle, True, item)
 
 
 def liveProgramsMenu():
