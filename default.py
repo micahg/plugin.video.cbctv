@@ -22,43 +22,38 @@ if sys.argv[1] == 'logout':
 addon_handle = int(sys.argv[1])
 
 def authorize():
-        prog = xbmcgui.DialogProgress()
-        prog.create(getString(30001))
-        cbc = CBC()
+    prog = xbmcgui.DialogProgress()
+    prog.create(getString(30001))
+    cbc = CBC()
 
-        username = xbmcaddon.Addon().getSetting("username")
-        if len(username) == 0:
-            username = None
+    username = xbmcaddon.Addon().getSetting("username")
+    if len(username) == 0:
+        username = None
 
-        password = xbmcaddon.Addon().getSetting("password")
-        if len(password) == 0:
-            password = None
-            username = None
+    password = xbmcaddon.Addon().getSetting("password")
+    if len(password) == 0:
+        password = None
+        username = None
 
-        if not cbc.authorize(username, password, prog.update):
-            log('(authorize) unable to authorize', True)
-            prog.close()
-            xbmcgui.Dialog().ok(getString(30002), getString(30002))
-            return False
-
+    if not cbc.authorize(username, password, prog.update):
+        log('(authorize) unable to authorize', True)
         prog.close()
-        return True
+        xbmcgui.Dialog().ok(getString(30002), getString(30002))
+        return False
+
+    prog.close()
+    return True
 
 
 def play(labels, image, url):
-    # item = xbmcgui.ListItem(labels['title'], path=url)
-    # item.setArt({ 'thumb': image, 'poster': image })
-    # item.setInfo(type="Video", infoLabels=labels)
-    # xbmcplugin.setResolvedUrl(addon_handle, True, item)
-    helper = inputstreamhelper.Helper('hls')
-    if not helper.check_inputstream():
-        log('(play) inputstream failed')
-        return None
     item = xbmcgui.ListItem(labels['title'], path=url)
-    item.setProperty('inputstreamaddon','inputstream.adaptive')
-    item.setProperty('inputstream.adaptive.manifest_type', 'hls')
+    item.setArt({ 'thumb': image, 'poster': image })
+    item.setInfo(type="Video", infoLabels=labels)
+    helper = inputstreamhelper.Helper('hls')
+    if xbmcaddon.Addon().getSetting("ffmpeg") == 'false' and helper.check_inputstream():
+        item.setProperty('inputstreamaddon','inputstream.adaptive')
+        item.setProperty('inputstream.adaptive.manifest_type', 'hls')
     xbmcplugin.setResolvedUrl(addon_handle, True, item)
-    #xbmc.Player().play(url, item)
 
 def playSmil(smil, labels, image):
     cbc = CBC()
@@ -94,10 +89,6 @@ def playShow(values):
             return
 
     return play(labels, image, res['url'])
-    # item = xbmcgui.ListItem(labels['title'], path=res['url'])
-    # item.setInfo(type="Video", infoLabels=labels)
-    # item.setArt({ 'thumb': image, 'poster': image })
-    # xbmcplugin.setResolvedUrl(addon_handle, True, item)
 
 
 def liveProgramsMenu():
